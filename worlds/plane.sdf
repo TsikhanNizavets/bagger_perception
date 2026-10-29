@@ -70,6 +70,346 @@
       </link>
     </model>
 
+    <!-- Static masonry target ahead of the camera, which looks along -X.
+         Four courses vary in depth and yaw, exposing offset front and side planes.
+         All blocks belong to one static model, so the target cannot topple. -->
+    <model name="stepped_block_wall">
+      <static>true</static>
+      <link name="footing">
+        <pose>-2.20 0.00 0.06 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>1.30 2.50 0.12</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>1.30 2.50 0.12</size></box></geometry>
+          <material>
+            <ambient>0.38 0.40 0.42 1</ambient>
+            <diffuse>0.38 0.40 0.42 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Course 1: 0.12 to 0.38 m above ground. -->
+      <link name="course_1_block_1">
+        <pose>-2.20 -1.00 0.25 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.62 0.30 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.62 0.30 0.26</size></box></geometry>
+          <material>
+            <ambient>0.60 0.65 0.70 1</ambient>
+            <diffuse>0.60 0.65 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_1_block_2">
+        <pose>-2.26 -0.60 0.25 0 0 -0.104719755</pose>
+        <collision name="collision">
+          <geometry><box><size>0.48 0.32 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.48 0.32 0.26</size></box></geometry>
+          <material>
+            <ambient>0.72 0.57 0.40 1</ambient>
+            <diffuse>0.72 0.57 0.40 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_1_block_3">
+        <pose>-2.16 -0.20 0.25 0 0 0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.58 0.28 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.58 0.28 0.26</size></box></geometry>
+          <material>
+            <ambient>0.48 0.57 0.62 1</ambient>
+            <diffuse>0.48 0.57 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_1_block_4">
+        <pose>-2.30 0.20 0.25 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.44 0.32 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.44 0.32 0.26</size></box></geometry>
+          <material>
+            <ambient>0.70 0.68 0.58 1</ambient>
+            <diffuse>0.70 0.68 0.58 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_1_block_5">
+        <pose>-2.18 0.60 0.25 0 0 0.104719755</pose>
+        <collision name="collision">
+          <geometry><box><size>0.64 0.30 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.64 0.30 0.26</size></box></geometry>
+          <material>
+            <ambient>0.57 0.62 0.48 1</ambient>
+            <diffuse>0.57 0.62 0.48 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_1_block_6">
+        <pose>-2.24 1.00 0.25 0 0 -0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.50 0.32 0.26</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.50 0.32 0.26</size></box></geometry>
+          <material>
+            <ambient>0.64 0.49 0.43 1</ambient>
+            <diffuse>0.64 0.49 0.43 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Course 2: 0.38 to 0.68 m above ground. -->
+      <link name="course_2_block_1">
+        <pose>-2.10 -1.00 0.53 0 0 0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.40 0.30 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.40 0.30 0.30</size></box></geometry>
+          <material>
+            <ambient>0.72 0.57 0.40 1</ambient>
+            <diffuse>0.72 0.57 0.40 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_2_block_2">
+        <pose>-2.30 -0.60 0.53 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.56 0.30 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.56 0.30 0.30</size></box></geometry>
+          <material>
+            <ambient>0.48 0.57 0.62 1</ambient>
+            <diffuse>0.48 0.57 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_2_block_3">
+        <pose>-2.04 -0.20 0.53 0 0 -0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.36 0.28 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.36 0.28 0.30</size></box></geometry>
+          <material>
+            <ambient>0.70 0.68 0.58 1</ambient>
+            <diffuse>0.70 0.68 0.58 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_2_block_4">
+        <pose>-2.26 0.20 0.53 0 0 0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.62 0.30 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.62 0.30 0.30</size></box></geometry>
+          <material>
+            <ambient>0.57 0.62 0.48 1</ambient>
+            <diffuse>0.57 0.62 0.48 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_2_block_5">
+        <pose>-2.06 0.60 0.53 0 0 -0.174532925</pose>
+        <collision name="collision">
+          <geometry><box><size>0.42 0.30 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.42 0.30 0.30</size></box></geometry>
+          <material>
+            <ambient>0.64 0.49 0.43 1</ambient>
+            <diffuse>0.64 0.49 0.43 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_2_block_6">
+        <pose>-2.32 1.00 0.53 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.54 0.30 0.30</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.54 0.30 0.30</size></box></geometry>
+          <material>
+            <ambient>0.60 0.65 0.70 1</ambient>
+            <diffuse>0.60 0.65 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Course 3: 0.68 to 0.92 m above ground. -->
+      <link name="course_3_block_1">
+        <pose>-2.26 -1.00 0.80 0 0 -0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.54 0.30 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.54 0.30 0.24</size></box></geometry>
+          <material>
+            <ambient>0.48 0.57 0.62 1</ambient>
+            <diffuse>0.48 0.57 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_3_block_2">
+        <pose>-2.08 -0.60 0.80 0 0 0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.38 0.28 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.38 0.28 0.24</size></box></geometry>
+          <material>
+            <ambient>0.70 0.68 0.58 1</ambient>
+            <diffuse>0.70 0.68 0.58 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_3_block_3">
+        <pose>-2.36 -0.20 0.80 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.60 0.30 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.60 0.30 0.24</size></box></geometry>
+          <material>
+            <ambient>0.57 0.62 0.48 1</ambient>
+            <diffuse>0.57 0.62 0.48 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_3_block_4">
+        <pose>-2.12 0.20 0.80 0 0 -0.174532925</pose>
+        <collision name="collision">
+          <geometry><box><size>0.42 0.30 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.42 0.30 0.24</size></box></geometry>
+          <material>
+            <ambient>0.64 0.49 0.43 1</ambient>
+            <diffuse>0.64 0.49 0.43 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_3_block_5">
+        <pose>-2.30 0.60 0.80 0 0 0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.56 0.30 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.56 0.30 0.24</size></box></geometry>
+          <material>
+            <ambient>0.60 0.65 0.70 1</ambient>
+            <diffuse>0.60 0.65 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_3_block_6">
+        <pose>-2.10 1.00 0.80 0 0 -0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.36 0.28 0.24</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.36 0.28 0.24</size></box></geometry>
+          <material>
+            <ambient>0.72 0.57 0.40 1</ambient>
+            <diffuse>0.72 0.57 0.40 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Course 4: 0.92 to 1.20 m above ground. -->
+      <link name="course_4_block_1">
+        <pose>-2.12 -1.00 1.06 0 0 0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.38 0.28 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.38 0.28 0.28</size></box></geometry>
+          <material>
+            <ambient>0.70 0.68 0.58 1</ambient>
+            <diffuse>0.70 0.68 0.58 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_4_block_2">
+        <pose>-2.32 -0.60 1.06 0 0 -0.087266463</pose>
+        <collision name="collision">
+          <geometry><box><size>0.60 0.30 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.60 0.30 0.28</size></box></geometry>
+          <material>
+            <ambient>0.57 0.62 0.48 1</ambient>
+            <diffuse>0.57 0.62 0.48 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_4_block_3">
+        <pose>-2.10 -0.20 1.06 0 0 -0.174532925</pose>
+        <collision name="collision">
+          <geometry><box><size>0.42 0.30 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.42 0.30 0.28</size></box></geometry>
+          <material>
+            <ambient>0.64 0.49 0.43 1</ambient>
+            <diffuse>0.64 0.49 0.43 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_4_block_4">
+        <pose>-2.34 0.20 1.06 0 0 0.000000000</pose>
+        <collision name="collision">
+          <geometry><box><size>0.56 0.30 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.56 0.30 0.28</size></box></geometry>
+          <material>
+            <ambient>0.60 0.65 0.70 1</ambient>
+            <diffuse>0.60 0.65 0.70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_4_block_5">
+        <pose>-2.08 0.60 1.06 0 0 0.209439510</pose>
+        <collision name="collision">
+          <geometry><box><size>0.36 0.28 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.36 0.28 0.28</size></box></geometry>
+          <material>
+            <ambient>0.72 0.57 0.40 1</ambient>
+            <diffuse>0.72 0.57 0.40 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="course_4_block_6">
+        <pose>-2.26 1.00 1.06 0 0 0.104719755</pose>
+        <collision name="collision">
+          <geometry><box><size>0.52 0.30 0.28</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.52 0.30 0.28</size></box></geometry>
+          <material>
+            <ambient>0.48 0.57 0.62 1</ambient>
+            <diffuse>0.48 0.57 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
     <model name="inspection_camera">
       <static>true</static>
       <pose>1.0 0.0 0.25 0 0 3.141592654</pose>
