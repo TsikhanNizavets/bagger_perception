@@ -36,14 +36,14 @@
             </plane>
           </geometry>
           <material>
-            <ambient>1 0 0 1</ambient>
-            <diffuse>1 0 0 1</diffuse>
+            <ambient>0.6 0.6 0.6 1</ambient>
+            <diffuse>0.6 0.6 0.6 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
 
-    <model name="cube">
+    <model name="cube_0">
       <pose>0 0 0.05 0 0 0</pose>
       <link name="cube">
         <inertial>
@@ -63,8 +63,35 @@
         <visual name="cube">
           <geometry><box><size>0.1 0.1 0.1</size></box></geometry>
           <material>
-            <ambient>0 0 1 1</ambient>
-            <diffuse>0 0 1 1</diffuse>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="cube_1">
+      <pose>0 0.2 0.05 0 0 0</pose>
+      <link name="cube">
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166666667</ixx>
+            <iyy>0.000166666667</iyy>
+            <izz>0.000166666667</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.1 0.1 0.1</size></box></geometry>
+        </collision>
+        <visual name="cube">
+          <geometry><box><size>0.1 0.1 0.1</size></box></geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
           </material>
         </visual>
       </link>
