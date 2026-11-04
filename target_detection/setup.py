@@ -9,7 +9,7 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name, ['package.xml', 'LICENSE']),
     ],
     package_data={'': ['py.typed']},
     install_requires=['setuptools'],
@@ -17,7 +17,7 @@ setup(
     maintainer='TsikhanNizavets',
     maintainer_email='pricoli708@gmail.com',
     description='TODO: Package description',
-    license='TODO: License declaration',
+    license='AGPL-3.0-only',
     extras_require={
         'test': [
             'pytest',
