@@ -9,7 +9,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     world_path = os.path.join(
-        get_package_share_directory('bagger_perception'),
+        get_package_share_directory('target_position_estimation'),
         'worlds',
         'plane.sdf',
     )

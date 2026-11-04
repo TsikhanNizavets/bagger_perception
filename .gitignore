@@ -67,4 +67,26 @@ vcpkg_installed/
 Testing/
 .cache/
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Python packaging
+*.egg-info/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# Test and analysis caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+
 NOTEs.md

@@ -9,6 +9,7 @@ from sensor_msgs.msg import Image
 from ultralytics import YOLOE
 from ultralytics.engine.results import Results
 from message_filters import Subscriber, ApproximateTimeSynchronizer
+from bagger_interfaces.msg import MaskedDepthArray
 
 
 class TargetDetection(Node):
@@ -40,9 +41,9 @@ class TargetDetection(Node):
                                                       queue_size=queue_size, slop=max_delay)
         self.image_sync.registerCallback(self.image_sync_callback)
 
-        self.masked_depth_pub = self.create_publisher(
-            Image,
-            '/masked_depth',
+        self.target_depth_pub = self.create_publisher(
+            MaskedDepthArray,
+            '/target_detection/masked_depths',
             QoSProfile(depth=5, reliability=ReliabilityPolicy.RELIABLE,),
         )
 
@@ -53,8 +54,10 @@ class TargetDetection(Node):
 
         depth = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough')
         # self.get_logger().info(f'Depth: {depth}\n')
-        resulting_mask = np.full_like(depth, 0, dtype=np.uint8)
-        masked_depth = np.full_like(depth, np.nan)
+        # combined_target_mask = np.full_like(depth, 0, dtype=np.uint8)
+
+        # masked_depth = np.full_like(depth, np.nan)
+        masked_depths = MaskedDepthArray()
 
         result = self.model.predict(source=image, verbose=True)[0]
 
@@ -73,19 +76,21 @@ class TargetDetection(Node):
             # if mask.shape != depth.shape:
             #     raise ValueError("Mask and depth must have the same dimensions")
             # self.get_logger().info(f'type of resutlich_mask: {type(resutling_mask)}, type of result.masks.data[0].cpu().numpy(): {type(result.masks.data[0].cpu().numpy())}\n')
-            self.get_logger().info(f'type of resutlich_mask: {resulting_mask.dtype}, type of result.masks.data[0].cpu().numpy(): {result.masks.data[0].cpu().numpy().dtype}\n')
+            # self.get_logger().info(f'type of resutlich_mask: {combined_target_mask.dtype}, type of result.masks.data[0].cpu().numpy(): {result.masks.data[0].cpu().numpy().dtype}\n')
 
-            resulting_mask = cv2.bitwise_or(mask.data[0].cpu().numpy(), resulting_mask, dst=resulting_mask, mask=mask.data[0].cpu().numpy())
-            
-        masked_depth = cv2.bitwise_and(depth, depth, mask=resulting_mask)
+            # combined_target_mask = cv2.bitwise_or(mask.data[0].cpu().numpy(), combined_target_mask, dst=combined_target_mask, mask=mask.data[0].cpu().numpy())
+            masked_depths.masked_depths.append(self.bridge.cv2_to_imgmsg(cv2.bitwise_or(depth, depth, dst=np.full_like(depth, np.nan), mask=mask.data[0].cpu().numpy())))
+            masked_depths.masked_depths[-1].header = depth_msg.header
+            # break
+        # masked_depth = cv2.bitwise_and(depth, depth, mask=combined_target_mask)
 
-        output_msg = self.bridge.cv2_to_imgmsg(
-            masked_depth,
-            encoding=depth_msg.encoding,
-        )
-        output_msg.header = depth_msg.header
+        # output_msg = self.bridge.cv2_to_imgmsg(
+        #     masked_depth,
+        #     encoding=depth_msg.encoding,
+        # )
+        # output_msg.header = depth_msg.header
 
-        self.masked_depth_pub.publish(output_msg)
+        self.target_depth_pub.publish(masked_depths)
 
         if self.show_images:
             cv2.imshow('YOLOE detections', result.plot())
