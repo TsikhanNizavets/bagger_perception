@@ -447,7 +447,6 @@
           <update_rate>5</update_rate>
           <topic>/rqbd_camera</topic>
           <camera>
-            <camera_info_topic>/rqbd_camera/camera_info</camera_info_topic>
             <horizontal_fov>1.047198</horizontal_fov>
             <image>
               <width>640</width>

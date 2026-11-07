@@ -15,16 +15,20 @@
 #include <tf2_ros/transform_broadcaster.hpp>
 #include <pcl/common/centroid.h>
 #include <string>
+#include "bagger_interfaces/msg/cube_pose_with_mask.hpp"
+#include "bagger_interfaces/msg/cube_pose_with_mask_array.hpp"
+#include <pcl_conversions/pcl_conversions.h>
+#include <utility>
 
 
 class TargetPositionEstimation : public rclcpp::Node {
     public:
         TargetPositionEstimation() : Node("target_position_estimation") {
-            color_image_sub = create_subscription<bagger_interfaces::msg::MaskedDepthArray>(
+            masked_depths_sub = create_subscription<bagger_interfaces::msg::MaskedDepthArray>(
                 "/target_detection/masked_depths",
                 10,
                 std::bind(
-                    &TargetPositionEstimation::color_image_callback,
+                    &TargetPositionEstimation::masked_depths_callback,
                     this,
                     std::placeholders::_1));
 
@@ -47,9 +51,14 @@ class TargetPositionEstimation : public rclcpp::Node {
                 10,
                 [this](sensor_msgs::msg::CameraInfo::ConstSharedPtr msg) {camera_info = msg;}
             );
+
+            detected_targets_pub = create_publisher<bagger_interfaces::msg::CubePoseWithMaskArray>(
+                "/detected_targets",
+                10
+            );
         }
     private:
-        void color_image_callback(const bagger_interfaces::msg::MaskedDepthArray& msg) {
+        void masked_depths_callback(const bagger_interfaces::msg::MaskedDepthArray& msg) {
             if (!camera_info) {
                 return;
             }
@@ -61,6 +70,10 @@ class TargetPositionEstimation : public rclcpp::Node {
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
             pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
             pcl::PointCloud<pcl::PointXYZ>::Ptr combined_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+
+            viewer->removeAllShapes();
+
+            bagger_interfaces::msg::CubePoseWithMaskArray detected_targets_msg;
 
             // RCLCPP_INFO(this->get_logger(), "message arrived outside the loop");
             for (std::vector<sensor_msgs::msg::Image>::const_iterator it = msg.masked_depths.begin(); it != msg.masked_depths.end(); ++it) {
@@ -91,7 +104,7 @@ class TargetPositionEstimation : public rclcpp::Node {
 
                 transform.header = it->header;
 
-                transform.child_frame_id = "detected_cube_" + std::to_string(it - msg.masked_depths.begin());
+                transform.child_frame_id = "detected_target_" + std::to_string(it - msg.masked_depths.begin());
 
                 transform.transform.translation.x = center[0];
                 transform.transform.translation.y = center[1];
@@ -101,14 +114,43 @@ class TargetPositionEstimation : public rclcpp::Node {
 
                 tf_broadcaster->sendTransform(transform);
 
+                pcl::PointXYZ centroid;
+                centroid.x = center[0];
+                centroid.y = center[1];
+                centroid.z = center[2];
+
+                std::string marker_id = "centroid_" + std::to_string(it - msg.masked_depths.begin());
+
+                viewer->addSphere(
+                    centroid,
+                    0.03,
+                    1.0, 0.0, 0.0,
+                    marker_id
+                );
+
                 // RCLCPP_INFO(this->get_logger(), "message arrived inside the loop");
                 
 
                 // calculate mean values and save apprx. cube's coordinates
 
                 // ByteTrack???
+                
+                bagger_interfaces::msg::CubePoseWithMask cube_msg;
+
+                cube_msg.transform = transform;
+                
+                pcl::toROSMsg(*filtered_cloud, cube_msg.cloud);
+                cube_msg.cloud.header = it->header;
+
+                cube_msg.center.x = center[0];
+                cube_msg.center.y = center[1];
+                cube_msg.center.z = center[2];
+
+                detected_targets_msg.cubes.push_back(std::move(cube_msg));
 
             }
+
+            detected_targets_pub->publish(detected_targets_msg);
 
             // RCLCPP_INFO_STREAM(this->get_logger(), (*depth_ptr).image);
             if (combined_cloud->empty()) {
@@ -151,13 +193,14 @@ class TargetPositionEstimation : public rclcpp::Node {
             return cloud;
         }
 
-        rclcpp::Subscription<bagger_interfaces::msg::MaskedDepthArray>::SharedPtr color_image_sub;
+        rclcpp::Subscription<bagger_interfaces::msg::MaskedDepthArray>::SharedPtr masked_depths_sub;
         rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_sub;
         rclcpp::TimerBase::SharedPtr viewer_timer;
         bool displaying = false;
         pcl::visualization::PCLVisualizer::Ptr viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")};
         sensor_msgs::msg::CameraInfo::ConstSharedPtr camera_info;
         std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
+        rclcpp::Publisher<bagger_interfaces::msg::CubePoseWithMaskArray>::SharedPtr detected_targets_pub;
         
 };
 

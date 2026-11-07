@@ -16,6 +16,7 @@ find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(pcl_conversions REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -36,6 +37,7 @@ target_link_libraries(target_position_estimation PUBLIC
   cv_bridge::cv_bridge
   rclcpp::rclcpp
   sensor_msgs::sensor_msgs_library
+  pcl_conversions::pcl_conversions
 )
 
 target_include_directories(target_position_estimation PRIVATE
