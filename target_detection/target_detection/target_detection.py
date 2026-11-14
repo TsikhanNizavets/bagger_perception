@@ -43,7 +43,7 @@ class TargetDetection(Node):
 
         self.target_depth_pub = self.create_publisher(
             MaskedDepthArray,
-            '/target_detection/masked_depths',
+            '/target_detection/masked_depth_array',
             QoSProfile(depth=5, reliability=ReliabilityPolicy.RELIABLE,),
         )
 
@@ -51,46 +51,17 @@ class TargetDetection(Node):
         start = time.perf_counter()
 
         image = self.bridge.imgmsg_to_cv2(colcor_msg, desired_encoding='bgr8')
-
         depth = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding='passthrough')
-        # self.get_logger().info(f'Depth: {depth}\n')
-        # combined_target_mask = np.full_like(depth, 0, dtype=np.uint8)
 
-        # masked_depth = np.full_like(depth, np.nan)
-        masked_depths = MaskedDepthArray()
+        masked_depth_array = MaskedDepthArray()
 
         result = self.model.predict(source=image, verbose=True)[0]
 
-        # self.get_logger().info(f'Mask: {result.masks}\n')
-
         for mask in result.masks or []:
-            # self.get_logger().info(f'Mask: {mask.data[0].size()}\n')
-            # self.get_logger().info(f'Mask: {mask.data[1].size()}\n')
-            # with np.printoptions(threshold=np.inf):
-            #     self.get_logger().info(f'Mask: {result.masks.data[0].cpu().numpy() > 0.5}\n', throttle_duration_sec=20.0)
-            # mask = result.masks.data[0].cpu().numpy() > 0.5
-            # with np.printoptions(threshold=np.inf):
-            #    self.get_logger().info(f'Mask bool: {np.array(mask.data[0].cpu().numpy(), dtype=np.float32)}', throttle_duration_sec=20.0)
+            masked_depth_array.masked_depth.append(self.bridge.cv2_to_imgmsg(cv2.bitwise_or(depth, depth, dst=np.full_like(depth, np.nan), mask=mask.data[0].cpu().numpy())))
+            masked_depth_array.masked_depth[-1].header = depth_msg.header
 
-
-            # if mask.shape != depth.shape:
-            #     raise ValueError("Mask and depth must have the same dimensions")
-            # self.get_logger().info(f'type of resutlich_mask: {type(resutling_mask)}, type of result.masks.data[0].cpu().numpy(): {type(result.masks.data[0].cpu().numpy())}\n')
-            # self.get_logger().info(f'type of resutlich_mask: {combined_target_mask.dtype}, type of result.masks.data[0].cpu().numpy(): {result.masks.data[0].cpu().numpy().dtype}\n')
-
-            # combined_target_mask = cv2.bitwise_or(mask.data[0].cpu().numpy(), combined_target_mask, dst=combined_target_mask, mask=mask.data[0].cpu().numpy())
-            masked_depths.masked_depths.append(self.bridge.cv2_to_imgmsg(cv2.bitwise_or(depth, depth, dst=np.full_like(depth, np.nan), mask=mask.data[0].cpu().numpy())))
-            masked_depths.masked_depths[-1].header = depth_msg.header
-            # break
-        # masked_depth = cv2.bitwise_and(depth, depth, mask=combined_target_mask)
-
-        # output_msg = self.bridge.cv2_to_imgmsg(
-        #     masked_depth,
-        #     encoding=depth_msg.encoding,
-        # )
-        # output_msg.header = depth_msg.header
-
-        self.target_depth_pub.publish(masked_depths)
+        self.target_depth_pub.publish(masked_depth_array)
 
         if self.show_images:
             cv2.imshow('YOLOE detections', result.plot())
@@ -113,7 +84,6 @@ def main(args=None):
             cv2.destroyAllWindows()
         node.destroy_node()
         rclpy.try_shutdown()
-
 
 if __name__ == '__main__':
     main()
