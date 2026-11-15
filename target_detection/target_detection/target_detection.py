@@ -4,10 +4,9 @@ import time
 import numpy as np
 from cv_bridge import CvBridge
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data, QoSProfile, ReliabilityPolicy
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image
 from ultralytics import YOLOE
-from ultralytics.engine.results import Results
 from message_filters import Subscriber, ApproximateTimeSynchronizer
 from bagger_interfaces.msg import MaskedDepthArray
 
@@ -16,7 +15,7 @@ class TargetDetection(Node):
     def __init__(self):
         super().__init__('target_detection')
 
-        self.show_images = self.declare_parameter('show_images', False).value
+        self.show_yoloe_detections = self.declare_parameter('show_yoloe_detections', False).value
         self.bridge = CvBridge()
         self.model = YOLOE('yoloe-11s-seg.pt')
         self.model.set_classes(['red cube'])
@@ -55,7 +54,7 @@ class TargetDetection(Node):
 
         masked_depth_array = MaskedDepthArray()
 
-        result = self.model.predict(source=image, verbose=True)[0]
+        result = self.model.predict(source=image, verbose=False)[0]
 
         for mask in result.masks or []:
             masked_depth_array.masked_depth.append(self.bridge.cv2_to_imgmsg(cv2.bitwise_or(depth, depth, dst=np.full_like(depth, np.nan), mask=mask.data[0].cpu().numpy())))
@@ -63,12 +62,12 @@ class TargetDetection(Node):
 
         self.target_depth_pub.publish(masked_depth_array)
 
-        if self.show_images:
+        if self.show_yoloe_detections:
             cv2.imshow('YOLOE detections', result.plot())
             cv2.waitKey(1)
                     
         elapsed_ms = (time.perf_counter() - start) * 1000
-        self.get_logger().info(f"Callback duration: {elapsed_ms:.1f} ms")
+        self.get_logger().debug(f"Callback duration: {elapsed_ms:.1f} ms")
 
 
 def main(args=None):
@@ -80,7 +79,7 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        if node.show_images:
+        if node.show_yoloe_detections:
             cv2.destroyAllWindows()
         node.destroy_node()
         rclpy.try_shutdown()

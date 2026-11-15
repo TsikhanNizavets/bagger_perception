@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <chrono>
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 #include <pcl/common/centroid.h>
@@ -10,10 +12,10 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <vtkObject.h>
 
 #include <cv_bridge/cv_bridge.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
-#include <pcl_conversions/pcl_conversions.h>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -28,6 +30,8 @@ class TargetPositionEstimation : public rclcpp::Node
 public:
     TargetPositionEstimation() : Node("target_position_estimation")
     {
+        show_point_cloud = this->declare_parameter<bool>("show_point_cloud", false);
+
         masked_depth_array_sub = create_subscription<bagger_interfaces::msg::MaskedDepthArray>(
             "/target_detection/masked_depth_array",
             10,
@@ -49,22 +53,28 @@ public:
 
         tf_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
-        viewer->setBackgroundColor (0, 0, 0);
-        viewer->addCoordinateSystem(0.1);
+        if (show_point_cloud)
+        {
+            viewer = std::make_shared<pcl::visualization::PCLVisualizer>("Point cloud");
 
-        viewer_timer = create_wall_timer(
-            std::chrono::milliseconds(30),
-            [this]()
-            {
-                if (!viewer->wasStopped())
+            viewer->setBackgroundColor (0, 0, 0);
+            viewer->addCoordinateSystem(0.1);
+
+            viewer_timer = create_wall_timer(
+                std::chrono::milliseconds(30),
+                [this]()
                 {
-                    viewer->spinOnce(1);
+                    if (!viewer->wasStopped())
+                    {
+                        viewer->spinOnce(1);
+                    }
                 }
-            }
-        );
+            );
+        }
+        
     }
 private:
-    bool displaying = false;
+    bool show_point_cloud = false;
     sensor_msgs::msg::CameraInfo::ConstSharedPtr camera_info;
 
     rclcpp::Subscription<bagger_interfaces::msg::MaskedDepthArray>::SharedPtr masked_depth_array_sub;
@@ -74,7 +84,7 @@ private:
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     
-    pcl::visualization::PCLVisualizer::Ptr viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")};
+    pcl::visualization::PCLVisualizer::Ptr viewer = nullptr;
     
     rclcpp::TimerBase::SharedPtr viewer_timer;
 
@@ -93,7 +103,10 @@ private:
         pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr combined_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-        viewer->removeAllShapes();
+        if (show_point_cloud)
+        {
+            viewer->removeAllShapes();
+        }
 
         bagger_interfaces::msg::TargetTransformArray targets_msg;
 
@@ -130,28 +143,34 @@ private:
 
             std::string marker_id = "centroid_" + std::to_string(it - msg.masked_depth.begin());
 
-            viewer->addSphere(
-                centroid,
-                0.03,
-                1.0, 0.0, 0.0,
-                marker_id
-            );
-
             targets_msg.target.push_back(std::move(target));
 
             *combined_cloud += *filtered_cloud;
+
+            if (show_point_cloud)
+            {
+                viewer->addSphere(
+                    centroid,
+                    0.03,
+                    1.0, 0.0, 0.0,
+                    marker_id
+                );
+            }
         }
 
         detected_targets_pub->publish(targets_msg);
 
-        if (combined_cloud->empty())
+        if (show_point_cloud)
         {
-            viewer->removePointCloud("combined_cloud");
-        }
-        else if (!viewer->updatePointCloud<pcl::PointXYZ>(combined_cloud, "combined_cloud"))
-        {
-            viewer->addPointCloud<pcl::PointXYZ>(combined_cloud, "combined_cloud");
-            viewer->resetCamera();
+            if (combined_cloud->empty())
+            {
+                viewer->removePointCloud("combined_cloud");
+            }
+            else if (!viewer->updatePointCloud<pcl::PointXYZ>(combined_cloud, "combined_cloud"))
+            {
+                viewer->addPointCloud<pcl::PointXYZ>(combined_cloud, "combined_cloud");
+                viewer->resetCamera();
+            }
         }
     }
 
@@ -192,6 +211,8 @@ private:
 
 int main(int argc, char * argv[])
 {
+    vtkObject::GlobalWarningDisplayOff();
+
     rclcpp::init(argc, argv);
 
     auto node = std::make_shared<TargetPositionEstimation>();

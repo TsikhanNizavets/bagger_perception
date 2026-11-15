@@ -2,15 +2,24 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>target_detection</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="pricoli708@gmail.com">TsikhanNizavets</maintainer>
+  <version>0.1.0</version>
+  <description>Detects targets in RGB images and publishes masked depth images</description>
+  <maintainer email="tsikhannizavets@gmail.com">Tsikhan Nizavets</maintainer>
   <license>AGPL-3.0-only</license>
+
+  <build_depend>python3-setuptools</build_depend>
 
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>bagger_interfaces</depend>
+  <depend>message_filters</depend>
+  <depend>python3-numpy</depend>
+  <depend>python3-opencv</depend>
+
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-ultralytics-pip</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
